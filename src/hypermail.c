@@ -739,10 +739,11 @@ int main(int argc, char **argv)
 
     /* Print output path if requested */
     if (print_output_path && amount_new > 0) {
-	char *index_path;
-	trio_asprintf(&index_path, "%s/%s", set_dir, index_name[0][DATE_INDEX]);
-	printf("\nOutput index: %s\n", index_path);
-	free(index_path);
+	char *index_path = NULL;
+	if (trio_asprintf(&index_path, "%s/%s", set_dir, index_name[0][DATE_INDEX]) > 0 && index_path) {
+	    printf("\nOutput index: %s\n", index_path);
+	    free(index_path);
+	}
     }
 
     if (configfile)
