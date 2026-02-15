@@ -145,6 +145,7 @@ void usage(void)
     printf("  -M            : %s\n", "Use metadata");
     printf("  -n listaddr   : %s\n", lang[MSG_OPTION_N]);
     printf("  -o keyword=val: Set config item\n");
+    printf("  -O            : Print output path after processing\n");
     printf("  -p            : %s\n", lang[MSG_OPTION_P]);
     printf("  -s htmlsuffix : %s\n", "HTML file suffix (.html, .htm, ..)");
     printf("  -t            : %s\n", "Use Tables");
@@ -180,6 +181,7 @@ int main(int argc, char **argv)
 
     int amount_old = 0;		/* number of old mails */
     int amount_new = 0;		/* number of new mails */
+    int print_output_path = 0;	/* whether to print output path */
 
 #ifdef HAVE_LOCALE_H
     setlocale(LC_ALL, "");
@@ -198,7 +200,7 @@ int main(int argc, char **argv)
 
     opterr = 0;
 
-#define GETOPT_OPTSTRING ("a:Ab:c:d:gil:L:m:n:o:ps:tTuvVxX0:1M?")
+#define GETOPT_OPTSTRING ("a:Ab:c:d:gil:L:m:n:o:Ops:tTuvVxX0:1M?")
 
     /* get pre config options here */
 	while ((i = getopt(argc, argv, GETOPT_OPTSTRING)) != -1) {
@@ -222,6 +224,7 @@ int main(int argc, char **argv)
 	case 'm':
 	case 'n':
 	case 'o':
+	case 'O':
 	case 'p':
 	case 's':
 	case 't':
@@ -293,6 +296,9 @@ int main(int argc, char **argv)
 	    break;
 	case 'o':
 	    ConfigAddItem(optarg);
+	    break;
+	case 'O':
+	    print_output_path = TRUE;
 	    break;
 	case 'p':
 	    set_showprogress = TRUE;
@@ -730,6 +736,15 @@ int main(int argc, char **argv)
 
     if (set_uselock)
 	unlock_archive();
+
+    /* Print output path if requested */
+    if (print_output_path && amount_new > 0) {
+	char *index_path = NULL;
+	if (trio_asprintf(&index_path, "%s/%s", set_dir, index_name[0][DATE_INDEX]) > 0 && index_path) {
+	    printf("\nOutput index: %s\n", index_path);
+	    free(index_path);
+	}
+    }
 
     if (configfile)
 	free(configfile);
