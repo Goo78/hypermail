@@ -51,6 +51,7 @@ tests/testmail
 
 # vi or emacs edited ones
 .*~
+*~
 \#.*
 
 # swap files
